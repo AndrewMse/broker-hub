@@ -9,15 +9,84 @@ normalizes them into one model and shows where each asset/tool is available.
 - [x] Reference UI received (Cryven dashboard mockup, `reference/cryven.png`)
 - [x] Questions answered (7 / 7)
 - [x] Design plan approved
-- [ ] Scaffold Expo project (SDK 57, React Native 0.86, Expo Router, TypeScript)
-- [ ] Mock API + broker adapters (eToro, IBKR), aggregation backend
+- [x] Scaffold Expo project (SDK 57, React Native 0.86, Expo Router, TypeScript)
+- [x] Mock API + broker adapters (eToro, IBKR), aggregation backend
 - [ ] Overview screen
 - [ ] Markets screen
 - [ ] Instrument detail screen
 - [ ] Brokers screen
 - [ ] Trade preview sheet
 - [ ] Settings sheet (display currency)
+- [ ] **v2: stocks + options** (see "v2" below): Exposure tab, Options tab (positions + premium income),
+      earnings / ex-dividend calendar, option legs on instrument pages
+- [ ] **v3**: tax view (Romania), wheel tracking, local alert notifications, projected dividends (see "v3" below)
 - [ ] Test on a physical phone with Expo Go
+- [ ] IBKR market data subscription for real Greeks (user to decide later). Mock uses Black-Scholes.
+
+## v2: stocks and options
+
+Focus: an aggregated view to check exposure per stock / sector quickly, plus covered calls and
+cash-secured puts (the user's options are usually covered). Brokers stay eToro + IBKR (the two with APIs).
+Indexes, crypto etc. stay in the app as before.
+
+- **Options live at IBKR only** (eToro's API has no options). Mock positions: AAPL 400 sh with short
+  1× 250C 2 Oct + 3× 270C 20 Nov, NVDA 400 sh with 4× 200C 20 Nov, MSFT 490P 16 Oct and TSLA 290P 23 Oct
+  cash-secured. IBKR cash raised to €71k to secure the puts.
+- **Greeks** come from Black-Scholes in `mock-server/greeks.ts` with a per-stock IV. Real IBKR Greeks need
+  a market data subscription; swap in the adapter later, the app contract doesn't change.
+- **Pairing** (`mock-server/options.ts`): at each broker, short calls take real shares (not CFDs, not
+  shares at another broker), short puts take free cash, earliest expiry first. Anything left unbacked
+  is flagged `Uncovered` / `Not cash-secured`.
+- **Risk flags**: ITM (warn if ≤ 7 days to expiry), earnings before expiry, ex-dividend before expiry
+  (high only when ITM and time value < dividend, the real early-assignment condition).
+- **Exposure** (`mock-server/exposure.ts`): shares and CFDs at notional, options at delta × price,
+  ETFs / index CFDs looked through to their named constituents (SPY/SPX, QQQ/NDX, VWCE), beta-weighted
+  to the S&P 500. Limits: one stock 15% of the portfolio, one sector 50% of stock exposure (constants).
+- **Premium income**: 12 months of mock IBKR Flex-style option trades. Net of buybacks and commissions,
+  by month (calls/puts), by stock with cost basis after premium, trade list.
+- **Calendar**: earnings and ex-dividend dates for held stocks; each event lists the short options still
+  open that day. Reachable from the Overview and Options headers and on instrument pages.
+- Mock "today" is fixed at 2026-09-25 (`market.ts` `asOf`) so days-to-expiry stay stable.
+
+## v3: tax, wheel, alerts, dividends
+
+- **Tax view** (`mock-server/tax.ts`, `/tax`, card on Overview). Per-year, per-source-country results in the
+  display currency (the user asked not to convert to RON; the form needs RON at BNR rates, a note says so).
+  Losses offset only within a country and carry forward (7 years) from the prior mock year. Dividend tax
+  net of foreign withholding credit. CASS meter at 6/12/24 minimum wages. Option premium is a gain at
+  expiry / buyback; assigned options adjust the share lot instead. Crypto excluded.
+  - **Country rule is a setting** (issuer default, or broker: IBKR Ireland, eToro Cyprus). CFDs always
+    broker. Dividends always issuer. The user hasn't confirmed which rule their accountant uses.
+  - Rates live in `market.ts` `roTax`: 10% gains, dividends 10% (2025) / 16% (2026), CASS 10%,
+    minimum wage 4,050 (2025) / 4,325 (2026) RON. **Unverified, check yearly.**
+- **Wheel** (`mock-server/wheel.ts`, Options → Wheel). Cycles rebuilt from option trades + closed lots:
+  puts until assigned → shares + calls until called away. Covered calls on shares bought outright are
+  cycles that "started with shares"; their annualized figure is income only (premium + dividends), since
+  the share gain predates the cycle. Mock: TSLA completed cycle Jan–Jun 2026 (+$4,905), TSLA and MSFT
+  in puts, AAPL and NVDA holding shares.
+- **Alerts** (`lib/alerts.ts`, hook in `(tabs)/_layout.tsx`, toggles in Settings). Local notifications
+  only, no server: assignment-risk flags fire once when detected (deduped via kv-store), expiry
+  reminders 2 days before at 09:00, earnings / ex-dividend the evening before when a short option is
+  open. Deterministic identifiers (`bh:` prefix) so re-syncs replace instead of duplicate. Works in
+  Expo Go on iOS; Android Expo Go dropped notifications in SDK 53 (needs a dev build). No-op on web.
+- **Projected dividends** (`mock-server/dividends.ts`, top of Calendar, amounts on ex-div rows).
+  Schedule per instrument in `market.ts` `dividendSchedules`; calendar ex-dividend events are now
+  generated from it. Withholding by issuer country (US 10%, NL 15%, DE 26.375%, IE 0%). CFDs and
+  VWCE (accumulating) are listed as not counted.
+- Settings persist via `expo-sqlite/kv-store` on device, localStorage on web (`lib/storage.ts`).
+- Trade history now includes closed stock lots and dividends for both brokers (`fetchStockTrades`,
+  `fetchDividends` on the adapter).
+
+### Open ideas (not scheduled)
+- Tax: RON conversion at BNR daily rates once a rate source exists; export for the Declarația Unică.
+- Concentration limits editable in Settings.
+- Roll helper: suggest next-month strikes for calls near assignment.
+- Wheel chain view (put → assignment → covered call) once assignments show up in trade history.
+- Greeks for index/ETF options (SPY/QQQ) in exposure are already handled; add chain view later.
+- Add XTB / Trading 212 / Revolut adapters (model already supports N brokers).
+- Persist display currency (e.g. `expo-sqlite/kv-store`).
+- Options chain in trade preview (options routes currently show "Not in preview").
+- Dark mode (colors are already tokens).
 
 ## Reference UI notes
 
