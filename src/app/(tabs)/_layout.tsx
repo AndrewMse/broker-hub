@@ -15,6 +15,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Overview', tabBarIcon: ({ color: c }) => <Icon name="overview" tint={String(c)} /> }} />
+      <Tabs.Screen name="markets" options={{ title: 'Markets', tabBarIcon: ({ color: c }) => <Icon name="markets" tint={String(c)} /> }} />
     </Tabs>
   );
 }
