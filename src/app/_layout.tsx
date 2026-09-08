@@ -35,6 +35,7 @@ export default function RootLayout() {
             }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="instrument/[id]" options={{ title: '' }} />
           </Stack>
         </SettingsProvider>
       </QueryClientProvider>
