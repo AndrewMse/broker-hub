@@ -36,6 +36,17 @@ export default function RootLayout() {
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="instrument/[id]" options={{ title: '' }} />
+            <Stack.Screen
+              name="trade"
+              options={{
+                presentation: 'formSheet',
+                headerShown: false,
+                sheetAllowedDetents: [0.94],
+                sheetGrabberVisible: true,
+                sheetCornerRadius: 28,
+                contentStyle: { backgroundColor: color.canvas },
+              }}
+            />
           </Stack>
         </SettingsProvider>
       </QueryClientProvider>
