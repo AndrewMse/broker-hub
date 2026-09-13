@@ -47,6 +47,17 @@ export default function RootLayout() {
                 contentStyle: { backgroundColor: color.canvas },
               }}
             />
+            <Stack.Screen
+              name="settings"
+              options={{
+                presentation: 'formSheet',
+                headerShown: false,
+                sheetAllowedDetents: [0.94],
+                sheetGrabberVisible: true,
+                sheetCornerRadius: 28,
+                contentStyle: { backgroundColor: color.canvas },
+              }}
+            />
           </Stack>
         </SettingsProvider>
       </QueryClientProvider>
