@@ -11,12 +11,17 @@ normalizes them into one model and shows where each asset/tool is available.
 - [x] Design plan approved
 - [x] Scaffold Expo project (SDK 57, React Native 0.86, Expo Router, TypeScript)
 - [x] Mock API + broker adapters (eToro, IBKR), aggregation backend
-- [ ] Overview screen
-- [ ] Markets screen
-- [ ] Instrument detail screen
-- [ ] Brokers screen
-- [ ] Trade preview sheet
-- [ ] Settings sheet (display currency)
+- [x] Overview screen
+- [x] Markets screen
+- [x] Instrument detail screen
+- [x] Brokers screen
+- [x] Trade preview sheet
+- [x] Settings sheet (display currency)
+- [x] Typecheck + lint clean; mock backend checked by running it directly
+- [x] Visual review on iOS simulator (iPhone 18 Pro, iOS 27). The web clipping was headless Chrome's
+      ~500px minimum window width, not a layout bug.
+- [x] Markets broker filter: cards now only show the selected broker's lines (before, the list filtered
+      but every card still showed both brokers, so nothing seemed to change)
 - [ ] **v2: stocks + options** (see "v2" below): Exposure tab, Options tab (positions + premium income),
       earnings / ex-dividend calendar, option legs on instrument pages
 - [ ] **v3**: tax view (Romania), wheel tracking, local alert notifications, projected dividends (see "v3" below)
@@ -294,3 +299,18 @@ Copy trading  ✓     —
 - Gradient card used only once (trade summary), as in the reference, instead of spread across screens.
 - Donut chart for the broker split (the default choice) → one horizontal split bar under the chart.
 - "Connect Wallet" button dropped, since both brokers are pre-connected (question 6).
+
+## Implementation notes (differences from the plan)
+
+- **Split bar** uses neutral accent tones, not broker brand colors. eToro green next to IBKR red
+  would read as gain/loss. The broker discs carry the brand.
+- **Spot forex and bond pills** are neutral grey; the plan didn't assign them a color.
+- **Index exposure through ETFs** (S&P 500 via SPY, Nasdaq 100 via QQQ) is worked out by the
+  aggregation layer for any broker that lists the ETF, not hard-coded per broker.
+- **Markets** gained a search field and an "All brokers / eToro / IBKR" filter.
+- **Trade preview**: the swap disc between the two cards switches Buy/Sell. Routes that can't be
+  quoted say why ("Needs $340,622" for one ES contract, "Not held here", "Not in preview" for options).
+  The cheapest usable route is preselected and marked "Lowest cost".
+- **Chart scrubbing** only claims horizontal drags, so vertical scrolling still works over it.
+- Mock price history is a seeded random walk; the portfolio's change per range is fixed
+  (1D +0.42%, 1W +1.31%, 1M +4.6%, 6M +11.8%, 1Y +21.4%).
