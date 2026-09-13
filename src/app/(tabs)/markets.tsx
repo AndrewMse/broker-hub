@@ -36,6 +36,7 @@ export default function Markets() {
   const [query, setQuery] = useState('');
 
   const brokers = useMemo(() => accounts.data?.map((a) => a.broker) ?? [], [accounts.data]);
+  const shownBrokers = useMemo(() => (brokerFilter === 'all' ? brokers : brokers.filter((b) => b.id === brokerFilter)), [brokers, brokerFilter]);
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -127,7 +128,8 @@ export default function Markets() {
           </Text>
         ) : null
       }
-      renderItem={({ item }) => <MarketItem row={item} brokers={brokers} />}
+      extraData={shownBrokers}
+      renderItem={({ item }) => <MarketItem row={item} brokers={shownBrokers} />}
     />
   );
 }
