@@ -36,6 +36,7 @@ export default function RootLayout() {
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="instrument/[id]" options={{ title: '' }} />
+            <Stack.Screen name="calendar" options={{ title: 'Calendar' }} />
             <Stack.Screen
               name="trade"
               options={{
