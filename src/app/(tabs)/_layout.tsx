@@ -1,8 +1,22 @@
 import { Tabs } from 'expo-router';
+import { useEffect } from 'react';
+import { useCalendar, useOptionsBook } from '@/api/queries';
 import { Icon } from '@/components/Icon';
+import { syncAlerts } from '@/lib/alerts';
+import { useSettings } from '@/state/settings';
 import { color, font } from '@/theme/tokens';
 
+function useAlertSync() {
+  const { alerts } = useSettings();
+  const book = useOptionsBook();
+  const calendar = useCalendar();
+  useEffect(() => {
+    if (book.data && calendar.data) syncAlerts(book.data, calendar.data, alerts).catch(() => {});
+  }, [book.data, calendar.data, alerts]);
+}
+
 export default function TabsLayout() {
+  useAlertSync();
   return (
     <Tabs
       screenOptions={{

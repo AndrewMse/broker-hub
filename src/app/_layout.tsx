@@ -10,8 +10,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { configureNotifications } from '@/lib/alerts';
 import { SettingsProvider } from '@/state/settings';
 import { color, font } from '@/theme/tokens';
+
+configureNotifications();
 
 export default function RootLayout() {
   const [loaded] = useFonts({ HankenGrotesk_300Light, HankenGrotesk_400Regular, HankenGrotesk_500Medium, HankenGrotesk_600SemiBold });
