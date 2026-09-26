@@ -101,7 +101,7 @@ export function WheelCard({ cycle: c, currency }: { cycle: WheelCycle; currency:
             style={{ paddingVertical: 8 }}
           >
             <Text variant="small" tone="accent">
-              Show {hidden} earlier steps
+              Show {hidden === 1 ? '1 earlier step' : `${hidden} earlier steps`}
             </Text>
           </Pressable>
         )}
