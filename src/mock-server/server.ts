@@ -141,7 +141,7 @@ export async function getPortfolio(base: Currency): Promise<Portfolio> {
     .map((g) => {
       const cost = g.holdings.reduce((s, h) => s + h.costBase, 0);
       // Divide by |cost| so short options (negative value and cost) keep the right sign
-      return { ...g, returnPct: cost ? (g.valueBase - cost) / cost : 0 };
+      return { ...g, returnPct: cost ? (g.valueBase - cost) / Math.abs(cost) : 0 };
     })
     .sort((a, b) => b.valueBase - a.valueBase);
 
