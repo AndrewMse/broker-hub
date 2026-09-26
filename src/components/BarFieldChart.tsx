@@ -16,6 +16,7 @@ interface Props {
 
 const BAR_PITCH = 4.5;
 const GLOW_SPAN = 0.2; // share of the width that lights up around the selected point
+const EDGE = 10; // keeps the selected dot whole at the first and last point
 
 /**
  * The signature element: a dense field of thin volume bars with a line on top,
@@ -39,7 +40,7 @@ export function BarFieldChart({ series, range, height = 230, formatDelta }: Prop
     const span = max - min || 1;
     const top = height * 0.26;
     const bottom = height * 0.8;
-    const x = (i: number) => (i / (n - 1)) * width;
+    const x = (i: number) => EDGE + (i / (n - 1)) * (width - 2 * EDGE);
     const y = (v: number) => bottom - ((v - min) / span) * (bottom - top);
     const pts = series.v.map((v, i) => [x(i), y(v)] as const);
 
@@ -69,7 +70,7 @@ export function BarFieldChart({ series, range, height = 230, formatDelta }: Prop
 
   function pick(pageX: number) {
     if (!series || !width || n < 2) return;
-    const i = Math.max(0, Math.min(n - 1, Math.round(((pageX - originX) / width) * (n - 1))));
+    const i = Math.max(0, Math.min(n - 1, Math.round(((pageX - originX - EDGE) / (width - 2 * EDGE)) * (n - 1))));
     if (i !== selected) {
       Haptics.selectionAsync();
       setSelection({ series, index: i });
