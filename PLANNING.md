@@ -22,11 +22,25 @@ normalizes them into one model and shows where each asset/tool is available.
       ~500px minimum window width, not a layout bug.
 - [x] Markets broker filter: cards now only show the selected broker's lines (before, the list filtered
       but every card still showed both brokers, so nothing seemed to change)
-- [ ] **v2: stocks + options** (see "v2" below): Exposure tab, Options tab (positions + premium income),
+- [x] **v2: stocks + options** (see "v2" below): Exposure tab, Options tab (positions + premium income),
       earnings / ex-dividend calendar, option legs on instrument pages
-- [ ] **v3**: tax view (Romania), wheel tracking, local alert notifications, projected dividends (see "v3" below)
+- [x] **v3**: tax view (Romania), wheel tracking, local alert notifications, projected dividends (see "v3" below)
+- [x] **Frontend polish pass** (2026-09-26): status-bar backdrop on tab screens, chart end dot no longer
+      clipped, full 4-letter tickers in avatars, short-option return sign on Overview (was −52% for a put
+      that's 52% kept), "1 earlier step" plural. All screens checked on the iOS simulator and web.
+- [ ] Simulator.app is missing from the Xcode install (simctl works, no window). Reinstall the iOS
+      simulator component in Xcode → Settings → Components. `xcode-select` still points at
+      Command Line Tools; run with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` until fixed.
 - [ ] Test on a physical phone with Expo Go
 - [ ] IBKR market data subscription for real Greeks (user to decide later). Mock uses Black-Scholes.
+
+Last updated: 2026-09-26
+
+### Next steps
+1. User: install Xcode, then run
+   `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer && sudo xcodebuild -license accept && sudo xcodebuild -runFirstLaunch`
+2. `xcodebuild -downloadPlatform iOS`, boot an iPhone simulator, `npx expo start --ios`.
+3. Screenshot each screen, compare against the reference and design plan, fix issues.
 
 ## v2: stocks and options
 
